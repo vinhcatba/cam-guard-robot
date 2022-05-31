@@ -1,2 +1,5 @@
 # py cache
 __pycache__/
+
+# temp files for testing
+temp/

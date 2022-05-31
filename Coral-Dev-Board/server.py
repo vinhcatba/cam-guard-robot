@@ -1,55 +1,74 @@
 import pickle
 import socket
 import struct
+from threading import Thread, Lock
+import numpy as np
 
 import cv2
+
+
 
 HOST = ''
 PORT = 8089
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print('Socket created')
+class SocketRecv(object):
+    def __init__(self):
+        self.started = False
+        self.frame = b''
+        self.read_lock = Lock()
 
-s.bind((HOST, PORT))
-print('Socket bind complete')
-s.listen(10)
-print('Socket now listening')
+    def start(self):
+        if self.started:
+            print("already started")
+            return None
+        self.started = True
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print('Socket created')
 
-conn, addr = s.accept()
+        self.s.bind((HOST, PORT))
+        print('Socket bind complete')
+        self.s.listen(10)
+        print('Socket now listening')
 
-data = b'' ### CHANGED
-payload_size = struct.calcsize("L") ### CHANGED
+        self.conn, self.addr = self.s.accept()
+        self.data = b'' ### CHANGED
+        self.payload_size = struct.calcsize("L") ### CHANGED
+        self.thread = Thread(target=self.sockrecv, args=())
+        self.thread.start()
+        return self
 
-while True:
+    def sockrecv(self):
+        while self.started:
+            # Retrieve message size
+            while len(self.data) < self.payload_size:
+                self.data += self.conn.recv(4096)
 
-    # Retrieve message size
-    while len(data) < payload_size:
-        data += conn.recv(4096)
+            self.packed_msg_size = self.data[:self.payload_size]
+            self.data = self.data[self.payload_size:]
+            self.msg_size = struct.unpack("L", self.packed_msg_size)[0] ### CHANGED
+            
+            # Retrieve all data based on message size
+            while len(self.data) < self.msg_size:
+                self.data += self.conn.recv(4096)
 
+            self.frame_data = self.data[:self.msg_size]
+            self.data = self.data[self.msg_size:]
+            if not self.data:
+                print("socket closed by client")
+                break
+                
+            # Extract frame
+            self.read_lock.acquire()
+            self.frame = pickle.loads(self.frame_data)
+            self.read_lock.release()
     
+    def readFrame(self):
+        self.read_lock.acquire()
+        frameCopied = self.frame.copy()
+        self.read_lock.release()
+        return frameCopied
 
-    packed_msg_size = data[:payload_size]
-    data = data[payload_size:]
-    msg_size = struct.unpack("L", packed_msg_size)[0] ### CHANGED
-
-    
-    # Retrieve all data based on message size
-    while len(data) < msg_size:
-        data += conn.recv(4096)
-
-    frame_data = data[:msg_size]
-    data = data[msg_size:]
-    if not data:
-        print("socket closed by client")
-        break
-    # Extract frame
-    frame = pickle.loads(frame_data)
-    
-    # Display
-    cv2.imshow('frame server', frame)
-    cv2.waitKey(1)
-    # todo: server close
-
-cv2.destroyAllWindows()
-
-
+    def stop(self):
+        self.stared = False
+        self.thread.join()
+        self.conn.close()

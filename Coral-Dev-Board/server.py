@@ -5,7 +5,7 @@ from threading import Thread, Lock
 import numpy as np
 
 import cv2
-
+import time
 
 
 HOST = ''
@@ -61,8 +61,9 @@ class SocketRecv(object):
             self.read_lock.acquire()
             self.frame = pickle.loads(self.frame_data)
             self.read_lock.release()
+            time.sleep(0.03)
     
-    def readFrame(self):
+    def read(self):
         self.read_lock.acquire()
         frameCopied = self.frame.copy()
         self.read_lock.release()

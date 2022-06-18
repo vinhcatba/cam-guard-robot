@@ -11,25 +11,31 @@ from frameGet import FrameGet
 
 
 class FrameStream(object):
-    def __init__(self):
+    def __init__(self, cap, host='localhost', port=8089):
         #self.cap = FrameGet().start()
         self.started = False
+        self.cap = cap
+        self.host = host
+        self.port = port
+        self.clientsocket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.clientsocket.connect((self.host, self.port))
+        self.payload_size = struct.calcsize("=L") ### CHANGED
+        print("payload size ", self.payload_size)
+
     
-    def start(self, cap, host='localhost', port=8089):
+    def start(self):
         
         if self.started:
             print("already started!!")
             return None
         self.started = True
-        self.cap = cap
-        self.thread = Thread(target=self.sendstream, args=(host, port))
+        self.thread = Thread(target=self.sendstream, args=())
         self.thread.start()
         return self
 
-    def sendstream(self, host, port):
+    def sendstream(self):
 
-        self.clientsocket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.clientsocket.connect((host, port))
+        
         while self.started:
             #ret,frame=cap.read()
             frame = self.cap.read()
@@ -37,14 +43,14 @@ class FrameStream(object):
             data = pickle.dumps(frame)
 
             # Send message length first
-            message_size = struct.pack("L", len(data)) ### CHANGED
-
+            message_size = struct.pack("=L", len(data)) ### CHANGED
+            # print("msg size ", message_size)
             # Then data
             self.clientsocket.sendall(message_size + data)
             
-            time.sleep(0.01)
-        msg_size = struct.pack("L", "-9999")
-        self.clientsocket.sendall(msg_size)
+            time.sleep(0.03)
+        # msg_size = struct.pack("L", "-9999")
+        # self.clientsocket.sendall(msg_size)
         
     
     def stop(self):

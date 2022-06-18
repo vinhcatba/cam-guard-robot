@@ -5,7 +5,7 @@ import cv2
 app = Flask(__name__)
 
 cap = Detector().start()
-
+# cap = SocketRecv().start()
 
 @app.route('/')
 def index():
@@ -17,8 +17,9 @@ def gen_frame():
     """Video streaming generator function."""
     while cap:
         frame = cap.getOutputFrame()
+        # frame = cap.read()
         convert = cv2.imencode('.jpg', frame)[1].tobytes()
-        #convert = cap.getOutputFrame()
+        convert = cap.getOutputFrame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + convert + b'\r\n') # concate frame one by one and show result
 

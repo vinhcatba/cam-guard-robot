@@ -32,7 +32,7 @@ class SocketRecv(object):
 
         self.conn, self.addr = self.s.accept()
         self.data = b'' ### CHANGED
-        self.payload_size = struct.calcsize("L") ### CHANGED
+        self.payload_size = struct.calcsize("=L") ### CHANGED
         self.thread = Thread(target=self.sockrecv, args=())
         self.thread.start()
         return self
@@ -45,7 +45,7 @@ class SocketRecv(object):
 
             self.packed_msg_size = self.data[:self.payload_size]
             self.data = self.data[self.payload_size:]
-            self.msg_size = struct.unpack("L", self.packed_msg_size)[0] ### CHANGED
+            self.msg_size = struct.unpack("=L", self.packed_msg_size)[0] ### CHANGED
             
             # Retrieve all data based on message size
             while len(self.data) < self.msg_size:

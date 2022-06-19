@@ -23,7 +23,7 @@ class Detector(object):
         self.started = False
         self.read_lock = Lock()
         self.cap = SocketRecv().start()
-        time.sleep(1)
+        time.sleep(10)
         self.frame = self.cap.read()
 
     def start(self):

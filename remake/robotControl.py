@@ -49,6 +49,7 @@ class motorControl(object):
 #         time.sleep(0.1)
         self.motorL.stop()
         self.motorR.stop()
+        self.dir = 'S'
 
     def turnL(self):
         self.motorL.stop()
@@ -100,6 +101,9 @@ class motorControl(object):
 
     def moveThread(self):
         while self.started:
+            print("last dir: ", self.lastDir)
+            print("dir: ", self.dir)
+            
             if self.lastDir != self.dir:
                 if self.dir == 'F':
                     self.forward()

@@ -8,10 +8,10 @@ from time import sleep
 
 def main():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    port = 12345
+    port = 8080
     fr = frameRead()
     fr.start()
-    fs = FrameSegment(fr, s, port)
+    fs = FrameSegment(fr, s, port, addr='192.168.1.23')
     fs.start()
     qrdet = qrDetector(fr)
     qrdet.start()
@@ -25,6 +25,7 @@ def main():
         if cv2.waitKey(33) == ord('q'):
             break
     fr.stop()
+    qrdet.stop()
     cv2.destroyAllWindows
 
 if __name__ == "__main__":

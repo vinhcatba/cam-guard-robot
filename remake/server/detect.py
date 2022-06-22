@@ -81,7 +81,7 @@ class Detector(object):
                                  cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 0, 0), 2)
         return cv2_im
 
-    def getOutputFrame(self):
+    def read(self):
         return self.frame
 
     def stop(self):

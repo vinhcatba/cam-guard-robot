@@ -5,7 +5,7 @@ from detect import Detector
 import cv2
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-fr = frameReceiv(s)
+fr = frameReceiv(s, addr='', port=8080)
 fr.start()
 detector = Detector(fr)
 detector.start()

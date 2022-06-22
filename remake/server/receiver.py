@@ -16,7 +16,7 @@ class frameReceiv(object):
         self.s.bind((self.addr, self.port))
         self.data = b''
         self.frameBytes = b''
-        self.dump_buffer(self.s)
+        self.dump_buffer()
         self.frame = self.get_first_frame()
         self.started = False
         self.thread = Thread(target=self.receive, args=())

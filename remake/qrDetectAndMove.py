@@ -65,13 +65,16 @@ class qrDetector(object):
                         curID = int(data[0])
 
                         if self.lastCurID != curID:
+                            print(data[1])
                             if curID == self.lastNextID:
                                 if data[1] == 'S':
                                     self.stop()
                                 else:
                                     self.lastCurID = curID
                                     self.lastNextID = int(data[2])
+                                    print("motor move: ", data[1])
                                     self.motor.move(data[1])
+
             # while self.motor.isTurning():
             #     sleep(0.001)
             sleep(0.03)

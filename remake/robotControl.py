@@ -17,26 +17,38 @@ class motorControl(object):
         self.started = False
         self.dir = 'S'
         self.lastDir = self.dir
+        self.thread = Thread(target=self.moveThread, args=())
+        self.thread.daemon = True
 
     def start(self):
         self.started = True
-        self.thread = Thread(target=self.moveThread, args=())
-        self.thread.start()
-        return self
 
-    def waitingCmd(self):
-        while self.started:
-            self.stop()
+        self.thread.start()
+
+
+    # def speedUP(self):
+
+    # def s
+
 
     def forward(self):
        # while not stopped:
         # self.stop()
         # self.state = 1
-        self.motorL.forward(self.Lspeed)
-        self.motorR.forward(self.Rspeed)
+        for i in range(0, 100, 10):
+            speed = self.speed*i/100
+            self.motorL.forward(speed)
+            self.motorR.forward(speed)
+            time.sleep(0.1)
+        time.sleep(1)
+        for i in range(0, 100, 10):
+            speed = self.speed*(1-i/100)
+            self.motorL.forward(speed)
+            self.motorR.forward(speed)
+            time.sleep(0.1)
 #         time.sleep(0.1)
-#         self.motorL.stop()
-#         self.motorR.stop()
+        self.motorL.stop()
+        self.motorR.stop()
 
     def turnL(self):
         self.motorL.stop()
@@ -46,6 +58,7 @@ class motorControl(object):
         time.sleep(self.duration)
         self.motorL.stop()
         self.motorR.stop()
+        self.dir = 'S'
         # time.sleep(self.duration*0.9)
         # self.motorR.stop()
 
@@ -57,6 +70,7 @@ class motorControl(object):
         time.sleep(self.duration)
         self.motorL.stop()
         self.motorR.stop()
+        self.dir = 'S'
         # time.sleep(self.duration*0.9)
         # self.motorL.stop()
 
@@ -68,9 +82,17 @@ class motorControl(object):
         time.sleep(self.duration*1.9)
         self.motorL.stop()
         self.motorR.stop()
+        self.dir = 'S'
         # time.sleep(self.duration*0.9)
         # self.motorL.stop()
         # self.motorR.stop()
+    
+    def isTurning(self):
+        if self.dir == 'S':
+            return True
+        else:
+            return False
+
 
     def stop(self):
         self.motorL.stop()

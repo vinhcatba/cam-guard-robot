@@ -11,9 +11,9 @@ cap = FrameGet().start()
 time.sleep(1)
 lastNextID = 0
 lastCurID = -1
-frameStreamObj = FrameStream(cap, host='localhost')
+frameStreamObj = FrameStream(cap, host='192.168.1.23')
 frameStreamObj.start()
-speed = 25
+speed = 20
 irPin = 5
 ledPin = 6
 motor = motorControl(speed).start()
@@ -39,7 +39,7 @@ def QR2cmd(data,  oldNextID):
             ret = 1
         else:
             #motor move dir
-            print("motor turn")
+            print("motor turn: ", dir)
             ret = 0
     else:
         print("incorrect nextID")
@@ -47,12 +47,12 @@ def QR2cmd(data,  oldNextID):
     return (ret, curID, dir, oldNextID)
         
 
-
+motor.move('F')
 while True:
     time.sleep(0.03)
     frame = cap.read()
-    #frame = cv2.resize(frame,(frame.shape[1], frame.shape[0]), 0.5, 0.5, interpolation = cv2.INTER_AREA )
-    #detect and decode
+    frame = cv2.resize(frame,(frame.shape[1], frame.shape[0]), 0.5, 0.5, interpolation = cv2.INTER_AREA )
+#      detect and decode
 
     data, bbox, _ = detector.detectAndDecode(frame)
     if data:
@@ -87,7 +87,7 @@ while True:
 
 
     # display the result
-    # cv2.imshow("qr detect", frame)
+    #cv2.imshow("qr detect", frame)
     
     if cv2.waitKey(1) == ord("q"):
         break

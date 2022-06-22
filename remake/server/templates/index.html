@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <title>Video Streaming Demonstration</title>
+  </head>
+  <body>
+    <div style="float:left; width:50%;">
+    <h1>Video Streaming Demonstration</h1>
+    <img src="{{ url_for('video_feed') }}">
+    </div>
+    <div style="float:left; width:50%;">
+        <form action="/newPage" method="post" style=" height: 100%; display: flex; justify-content: center; align-items: center; flex-direction: column; ">
+            <div class="top">
+                <button name="forward" onclick="foward()">Forward</button>
+            </div>
+            <div class="bottom" style=" margin-top: 10px; ">
+                <button name="turnL" onclick="foward()">Turn Left</button>
+                <button name="turnB" onclick="turnBack()" style="margin: 0 10px;">Turn Back</button>
+                <button name="turnR" onclick="foward()">Turn Right</button>
+            </div>
+        </form>
+    </div>  
+  </body>
+</html>
